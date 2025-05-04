@@ -1,0 +1,18 @@
+name: MBFPorter
+version: '1.0-SNAPSHOT'
+main: net.enabify.mBFPorter.MBFPorter
+api-version: '1.20'
+folia-supported: true
+depend: [WorldGuard]
+
+commands:
+  getwand:
+    description: Mob Teleport Wand を取得します
+    usage: /getwand
+    permission: mbfporter.getwand
+    permission-message: あなたにはこのコマンドを使う権限がありません
+
+permissions:
+  mbfporter.getwand:
+    description: Mob Teleport Wand を入手する権限
+    default: op
