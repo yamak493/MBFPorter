@@ -34,8 +34,23 @@ public final class MBFPorter extends JavaPlugin implements Listener {
         getLogger().info("MBFPorter has been enabled with Folia support.");
     }
 
-    private Location getTeleportLocation() {
-        return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
+    private Location getTeleportLocation(int scrollType) {
+        switch (scrollType) {
+            case 2037: // メインワールド
+                return new Location(Bukkit.getWorld("world"), 3905, 77, -3520);
+            case 2038: // メインネザー
+                return new Location(Bukkit.getWorld("world_nether"), 23, 83, 86);
+            case 2039: // メインエンド
+                return new Location(Bukkit.getWorld("world_the_end"), 9, 59, -55);
+            case 2040: // TTワールド
+                return new Location(Bukkit.getWorld("tt_world"), -59, 64, -43);
+            case 2041: // TTネザー
+                return new Location(Bukkit.getWorld("tt_nether"), 47, 67, -70);
+            case 2042: // TTエンド
+                return new Location(Bukkit.getWorld("tt_end"), 92, 60, -1);
+            default:
+                return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
+        }
     }
 
     private boolean isTeleportItem(ItemStack item) {
@@ -45,6 +60,32 @@ public final class MBFPorter extends JavaPlugin implements Listener {
         ItemMeta meta = item.getItemMeta();
         PersistentDataContainer container = meta.getPersistentDataContainer();
         return container.has(key, PersistentDataType.INTEGER);
+    }
+
+    private int getScrollType(ItemStack item) {
+        if (!isTeleportItem(item)) return 0;
+        
+        ItemMeta meta = item.getItemMeta();
+        return meta.getCustomModelData();
+    }
+
+    private String getScrollTypeName(int scrollType) {
+        switch (scrollType) {
+            case 2037:
+                return "メインワールド";
+            case 2038:
+                return "メインネザー";
+            case 2039:
+                return "メインエンド";
+            case 2040:
+                return "TTワールド";
+            case 2041:
+                return "TTネザー";
+            case 2042:
+                return "TTエンド";
+            default:
+                return "メインワールド";
+        }
     }
 
     private boolean canPlayerTeleportMobHere(Player player, Location mobLocation) {
@@ -71,6 +112,9 @@ public final class MBFPorter extends JavaPlugin implements Listener {
         if (!isTeleportItem(item)) return;
         if (!(target instanceof Mob)) return;
 
+        int scrollType = getScrollType(item);
+        String scrollName = getScrollTypeName(scrollType);
+
         // 非同期で実行する必要があるため、プレイヤーのリージョンスケジューラを使用
         player.getScheduler().run(this, scheduledTask -> {
             // WorldGuard 保護チェック
@@ -82,7 +126,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
             // エンティティの処理はそのエンティティのホームリージョンで行う
             target.getScheduler().run(this, entityTask -> {
                 // テレポート処理 - teleport()の代わりにteleportAsync()を使用
-                Location dest = getTeleportLocation();
+                Location dest = getTeleportLocation(scrollType);
                 target.teleportAsync(dest).thenAccept(success -> {
                     if (success) {
                         // 最終処理をプレイヤーのリージョンで実行
@@ -92,7 +136,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
                             player.getWorld().playSound(target.getLocation(), Sound.BLOCK_ANVIL_USE, 1.0f, 1.0f);
 
                             // 通知とアイテム削除
-                            player.sendMessage(ChatColor.GREEN+"Mobに転送スクロールを使用しました！ ");
+                            player.sendMessage(ChatColor.GREEN+"Mobを" + scrollName + "に転送しました！");
                             item.setAmount(item.getAmount() - 1);
                         }, () -> {
                             // エラー処理
@@ -112,14 +156,18 @@ public final class MBFPorter extends JavaPlugin implements Listener {
         });
     }
 
-    public ItemStack createTeleportWand() {
+    public ItemStack createTeleportWand(int customModelData, String displayName) {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("転送スクロール");
-        meta.setCustomModelData(2037);
+        meta.setDisplayName(displayName);
+        meta.setCustomModelData(customModelData);
         meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
         item.setItemMeta(meta);
         return item;
+    }
+
+    public ItemStack createTeleportWand() {
+        return createTeleportWand(2037, "転送スクロール（メインワールド）");
     }
 
     @Override
@@ -128,8 +176,57 @@ public final class MBFPorter extends JavaPlugin implements Listener {
             if (sender instanceof Player player) {
                 // コマンド実行はプレイヤーのリージョンスケジューラで行う
                 player.getScheduler().run(this, task -> {
-                    player.getInventory().addItem(createTeleportWand());
-                    player.sendMessage(ChatColor.GREEN+"転送スクロールを付与しました！");
+                    // 引数がある場合はそのタイプのスクロールを、ない場合はメインワールド用を付与
+                    if (args.length > 0) {
+                        String scrollType = args[0].toLowerCase();
+                        ItemStack scroll = null;
+                        
+                        switch (scrollType) {
+                            case "main":
+                            case "world":
+                                scroll = createTeleportWand(2037, "転送スクロール（メインワールド）");
+                                break;
+                            case "nether":
+                                scroll = createTeleportWand(2038, "転送スクロール（メインネザー）");
+                                break;
+                            case "end":
+                                scroll = createTeleportWand(2039, "転送スクロール（メインエンド）");
+                                break;
+                            case "tt":
+                            case "tt_world":
+                                scroll = createTeleportWand(2040, "転送スクロール（TTワールド）");
+                                break;
+                            case "tt_nether":
+                                scroll = createTeleportWand(2041, "転送スクロール（TTネザー）");
+                                break;
+                            case "tt_end":
+                                scroll = createTeleportWand(2042, "転送スクロール（TTエンド）");
+                                break;
+                            case "all":
+                                // 全てのスクロールを付与
+                                player.getInventory().addItem(createTeleportWand(2037, "転送スクロール（メインワールド）"));
+                                player.getInventory().addItem(createTeleportWand(2038, "転送スクロール（メインネザー）"));
+                                player.getInventory().addItem(createTeleportWand(2039, "転送スクロール（メインエンド）"));
+                                player.getInventory().addItem(createTeleportWand(2040, "転送スクロール（TTワールド）"));
+                                player.getInventory().addItem(createTeleportWand(2041, "転送スクロール（TTネザー）"));
+                                player.getInventory().addItem(createTeleportWand(2042, "転送スクロール（TTエンド）"));
+                                player.sendMessage(ChatColor.GREEN+"全ての転送スクロールを付与しました！");
+                                return;
+                            default:
+                                player.sendMessage(ChatColor.RED+"無効なスクロールタイプです。");
+                                player.sendMessage(ChatColor.YELLOW+"使用方法: /getwand [main|nether|end|tt|ttnether|ttend|all]");
+                                return;
+                        }
+                        
+                        if (scroll != null) {
+                            player.getInventory().addItem(scroll);
+                            player.sendMessage(ChatColor.GREEN+"転送スクロールを付与しました！");
+                        }
+                    } else {
+                        // 引数がない場合はメインワールド用を付与
+                        player.getInventory().addItem(createTeleportWand());
+                        player.sendMessage(ChatColor.GREEN+"転送スクロール（メインワールド）を付与しました！");
+                    }
                 }, () -> {
                     // エラー処理
                     player.sendMessage(ChatColor.RED+"アイテムの付与に失敗しました。");
