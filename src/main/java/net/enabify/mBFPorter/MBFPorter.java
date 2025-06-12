@@ -13,6 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wither;
+import org.bukkit.entity.Warden;
+import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.ElderGuardian;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -101,6 +105,14 @@ public final class MBFPorter extends JavaPlugin implements Listener {
         }
     }
 
+    private boolean isForbiddenMob(Entity entity) {
+        // ウィザー、ウォーデン、エンダードラゴン、エルダーガーディアンは転送禁止
+        return entity instanceof Wither || 
+               entity instanceof Warden ||
+                entity instanceof ElderGuardian ||
+                entity instanceof EnderDragon;
+    }
+
     @EventHandler
     public void onEntityRightClick(PlayerInteractEntityEvent event) {
         if (event.getHand() != EquipmentSlot.HAND) return;
@@ -111,6 +123,12 @@ public final class MBFPorter extends JavaPlugin implements Listener {
 
         if (!isTeleportItem(item)) return;
         if (!(target instanceof Mob)) return;
+
+        // 転送禁止MOBのチェック
+        if (isForbiddenMob(target)) {
+            player.sendMessage(ChatColor.RED + "このMOBは転送できません。");
+            return;
+        }
 
         int scrollType = getScrollType(item);
         String scrollName = getScrollTypeName(scrollType);
