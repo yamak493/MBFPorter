@@ -40,7 +40,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
 
     private Location getTeleportLocation(int scrollType) {
         switch (scrollType) {
-            case 2037: // メインワールド
+            case 2037: // メインワールド | 第３都市
                 return new Location(Bukkit.getWorld("world"), 3905, 77, -3520);
             case 2038: // メインネザー
                 return new Location(Bukkit.getWorld("world_nether"), 23, 83, 86);
@@ -52,6 +52,16 @@ public final class MBFPorter extends JavaPlugin implements Listener {
                 return new Location(Bukkit.getWorld("tt_nether"), 47, 67, -70);
             case 2042: // TTエンド
                 return new Location(Bukkit.getWorld("tt_end"), 92, 60, -1);
+            case 2043: // メインワールド | 第１都市
+                return new Location(Bukkit.getWorld("world"), 4197, 87, -919);
+            case 2044: // メインワールド | 第２都市
+                return new Location(Bukkit.getWorld("world"), 6194, 82, -365);
+            case 2045: // メインワールド | 第４都市
+                return new Location(Bukkit.getWorld("world"), 3905, 77, -3519);
+            case 2046: // メインワールド | 第５都市
+                return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
+            case 2047: // メインワールド | 第６都市
+                return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
             default:
                 return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
         }
@@ -76,7 +86,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
     private String getScrollTypeName(int scrollType) {
         switch (scrollType) {
             case 2037:
-                return "メインワールド";
+                return "メインワールド | 第３都市";
             case 2038:
                 return "メインネザー";
             case 2039:
@@ -87,8 +97,18 @@ public final class MBFPorter extends JavaPlugin implements Listener {
                 return "TTネザー";
             case 2042:
                 return "TTエンド";
+            case 2043:
+                return "メインワールド | 第１都市";
+            case 2044:
+                return "メインワールド | 第２都市";
+            case 2045:
+                return "メインワールド | 第４都市";
+            case 2046:
+                return "メインワールド | 第５都市";
+            case 2047:
+                return "メインワールド | 第６都市";
             default:
-                return "メインワールド";
+                return "メインワールド | 第３都市";
         }
     }
 
@@ -205,9 +225,9 @@ public final class MBFPorter extends JavaPlugin implements Listener {
                         ItemStack scroll = null;
                         
                         switch (scrollType) {
-                            case "main":
+                            case "main3":
                             case "world":
-                                scroll = createTeleportWand(2037, "転送スクロール（メインワールド）");
+                                scroll = createTeleportWand(2037, "転送スクロール（メインワールド | 第３都市）");
                                 break;
                             case "nether":
                                 scroll = createTeleportWand(2038, "転送スクロール（メインネザー）");
@@ -225,19 +245,39 @@ public final class MBFPorter extends JavaPlugin implements Listener {
                             case "tt_end":
                                 scroll = createTeleportWand(2042, "転送スクロール（TTエンド）");
                                 break;
+                            case "main1":
+                                scroll = createTeleportWand(2043, "転送スクロール（メインワールド | 第１都市）");
+                                break;
+                            case "main2":
+                                scroll = createTeleportWand(2044, "転送スクロール（メインワールド | 第２都市）");
+                                break;
+                            case "main4":
+                                scroll = createTeleportWand(2045, "転送スクロール（メインワールド | 第４都市）");
+                                break;
+                            case "main5":
+                                scroll = createTeleportWand(2046, "転送スクロール（メインワールド | 第５都市）");
+                                break;
+                            case "main6":
+                                scroll = createTeleportWand(2047, "転送スクロール（メインワールド | 第６都市）");
+                                break;
                             case "all":
                                 // 全てのスクロールを付与
-                                player.getInventory().addItem(createTeleportWand(2037, "転送スクロール（メインワールド）"));
+                                player.getInventory().addItem(createTeleportWand(2037, "転送スクロール（メインワールド | 第３都市）"));
                                 player.getInventory().addItem(createTeleportWand(2038, "転送スクロール（メインネザー）"));
                                 player.getInventory().addItem(createTeleportWand(2039, "転送スクロール（メインエンド）"));
                                 player.getInventory().addItem(createTeleportWand(2040, "転送スクロール（TTワールド）"));
                                 player.getInventory().addItem(createTeleportWand(2041, "転送スクロール（TTネザー）"));
                                 player.getInventory().addItem(createTeleportWand(2042, "転送スクロール（TTエンド）"));
+                                player.getInventory().addItem(createTeleportWand(2043, "転送スクロール（メインワールド | 第１都市）"));
+                                player.getInventory().addItem(createTeleportWand(2044, "転送スクロール（メインワールド | 第２都市）"));
+                                player.getInventory().addItem(createTeleportWand(2045, "転送スクロール（メインワールド | 第４都市）"));
+                                player.getInventory().addItem(createTeleportWand(2046, "転送スクロール（メインワールド | 第５都市）"));
+                                player.getInventory().addItem(createTeleportWand(2047, "転送スクロール（メインワールド | 第６都市）"));
                                 player.sendMessage(ChatColor.GREEN+"全ての転送スクロールを付与しました！");
                                 return;
                             default:
                                 player.sendMessage(ChatColor.RED+"無効なスクロールタイプです。");
-                                player.sendMessage(ChatColor.YELLOW+"使用方法: /getwand [main|nether|end|tt|ttnether|ttend|all]");
+                                player.sendMessage(ChatColor.YELLOW+"使用方法: /getwand [main|nether|end|tt|ttnether|ttend|main1|main2|main3|main4|main5|all]");
                                 return;
                         }
                         
@@ -248,7 +288,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
                     } else {
                         // 引数がない場合はメインワールド用を付与
                         player.getInventory().addItem(createTeleportWand());
-                        player.sendMessage(ChatColor.GREEN+"転送スクロール（メインワールド）を付与しました！");
+                        player.sendMessage(ChatColor.GREEN+"転送スクロール（メインワールド | 第３都市）を付与しました！");
                     }
                 }, () -> {
                     // エラー処理
