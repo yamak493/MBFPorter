@@ -191,6 +191,11 @@ public final class MBFPorter extends JavaPlugin implements Listener {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (command.getName().equalsIgnoreCase("getwand")) {
+            //OP権限を持っていないユーザーは実行できない
+            if (!sender.hasPermission("mbfporter.getwand")) {
+                sender.sendMessage(ChatColor.RED + "このコマンドを実行する権限がありません。");
+                return true;
+            }
             if (sender instanceof Player player) {
                 // コマンド実行はプレイヤーのリージョンスケジューラで行う
                 player.getScheduler().run(this, task -> {
