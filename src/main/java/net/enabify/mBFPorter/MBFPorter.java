@@ -41,7 +41,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
     private Location getTeleportLocation(int scrollType) {
         switch (scrollType) {
             case 2037: // メインワールド | 第３都市
-                return new Location(Bukkit.getWorld("world"), 3905, 77, -3520);
+                return new Location(Bukkit.getWorld("world"),  4950, 68, -1149);
             case 2038: // メインネザー
                 return new Location(Bukkit.getWorld("world_nether"), 23, 83, 86);
             case 2039: // メインエンド
@@ -59,7 +59,7 @@ public final class MBFPorter extends JavaPlugin implements Listener {
             case 2045: // メインワールド | 第４都市
                 return new Location(Bukkit.getWorld("world"), 3905, 77, -3519);
             case 2046: // メインワールド | 第５都市
-                return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
+                return new Location(Bukkit.getWorld("world"), 1153, 63, -2545);
             case 2047: // メインワールド | 第６都市
                 return new Location(Bukkit.getWorld("world"), 4949, 68, -1149);
             default:
