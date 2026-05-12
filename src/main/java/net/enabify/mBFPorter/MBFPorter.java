@@ -144,6 +144,9 @@ public final class MBFPorter extends JavaPlugin implements Listener {
         if (!isTeleportItem(item)) return;
         if (!(target instanceof Mob)) return;
 
+        // 転送スクロールを使う場合は、村人の取引GUIなどのデフォルト動作を止める
+        event.setCancelled(true);
+
         // 転送禁止MOBのチェック
         if (isForbiddenMob(target)) {
             player.sendMessage(ChatColor.RED + "このMOBは転送できません。");
